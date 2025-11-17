@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { MessageCircle, Github, Twitter, Mail } from 'lucide-react'
 
 export const Footer = () => {

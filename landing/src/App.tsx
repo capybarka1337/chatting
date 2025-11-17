@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Zap, Shield, Globe, Sparkles } from 'lucide-react'
 import { Navbar } from './components/Navbar'
 import { Hero } from './components/Hero'
 import { Features } from './components/Features'
