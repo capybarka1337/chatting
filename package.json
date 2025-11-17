@@ -1,0 +1,31 @@
+{
+  "name": "cloudflare-messenger",
+  "version": "1.0.0",
+  "description": "A modern messenger built on Cloudflare infrastructure",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "landing"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:landing\" \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:landing": "cd landing && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:landing && npm run build:frontend && npm run build:backend",
+    "build:landing": "cd landing && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "deploy": "npm run deploy:backend && npm run deploy:landing && npm run deploy:frontend",
+    "deploy:backend": "cd backend && npm run deploy",
+    "deploy:landing": "cd landing && npm run deploy",
+    "deploy:frontend": "cd frontend && npm run deploy"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["messenger", "cloudflare", "websocket", "typescript", "react"],
+  "author": "Cloudflare Messenger Team",
+  "license": "MIT"
+}
