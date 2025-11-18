@@ -1,5 +1,4 @@
 import { Reaction } from '../types';
-import { UserAvatar } from './UserAvatar';
 
 interface MessageReactionsProps {
   reactions: Reaction[];

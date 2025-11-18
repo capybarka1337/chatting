@@ -73,6 +73,11 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
 export interface WebSocketMessage {
   type: 'message' | 'typing' | 'online_status' | 'reaction' | 'read_receipt';
   data: any;

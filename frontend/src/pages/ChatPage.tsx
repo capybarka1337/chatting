@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { 
+import {
   MessageCircle, 
   Search, 
   Settings, 
@@ -11,7 +10,6 @@ import {
   Smile,
   Paperclip,
   Send,
-  Users,
   Cloud,
   Brain
 } from 'lucide-react';
@@ -25,13 +23,12 @@ import { ChannelList } from '../components/ChannelList';
 import { UserAvatar } from '../components/UserAvatar';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { toast } from 'react-hot-toast';
+import type { Channel, Dialog, Message } from '../types';
 
 export const ChatPage = () => {
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'dialogs' | 'channels'>('dialogs');
-  const [showNewChannelModal, setShowNewChannelModal] = useState(false);
-  const [showNewDialogModal, setShowNewDialogModal] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthStore();
@@ -60,14 +57,14 @@ export const ChatPage = () => {
 
   const loadInitialData = async () => {
     try {
-      const dialogsResponse = await apiClient.get('/dialogs');
+      const dialogsResponse = await apiClient.get<Dialog[]>('/dialogs');
       if (dialogsResponse.success) {
-        useChatStore.getState().setDialogs(dialogsResponse.data || []);
+        useChatStore.getState().setDialogs(dialogsResponse.data ?? []);
       }
 
-      const channelsResponse = await apiClient.get('/channels');
+      const channelsResponse = await apiClient.get<Channel[]>('/channels');
       if (channelsResponse.success) {
-        useChatStore.getState().setChannels(channelsResponse.data || []);
+        useChatStore.getState().setChannels(channelsResponse.data ?? []);
       }
     } catch (error) {
       toast.error('Failed to load chat data');
@@ -96,6 +93,14 @@ export const ChatPage = () => {
 
   const handleTyping = (isTyping: boolean) => {
     sendTyping(isTyping, currentDialog?.id || currentChannel?.id || '');
+  };
+
+  const handleNewDialogClick = () => {
+    toast('Direct messages coming soon!');
+  };
+
+  const handleNewChannelClick = () => {
+    toast('Channel creation coming soon!');
   };
 
   const currentChat = currentDialog || currentChannel;
@@ -204,14 +209,14 @@ export const ChatPage = () => {
         <div className="p-4 border-t border-slate-700">
           <div className="flex space-x-2">
             <button
-              onClick={() => setShowNewDialogModal(true)}
+              onClick={handleNewDialogClick}
               className="flex-1 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
             >
               <Plus className="w-4 h-4" />
               <span>New Chat</span>
             </button>
             <button
-              onClick={() => setShowNewChannelModal(true)}
+              onClick={handleNewChannelClick}
               className="flex-1 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
             >
               <Plus className="w-4 h-4" />
@@ -242,7 +247,7 @@ export const ChatPage = () => {
                         </p>
                       </div>
                     </>
-                  ) : (
+                  ) : currentChannel ? (
                     <>
                       <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${currentChannel.colorScheme} flex items-center justify-center`}>
                         {currentChannel.type === 'mental' ? (
@@ -258,7 +263,7 @@ export const ChatPage = () => {
                         </p>
                       </div>
                     </>
-                  )}
+                  ) : null}
                 </div>
                 <div className="flex space-x-2">
                   <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
@@ -334,9 +339,11 @@ export const ChatPage = () => {
   async function loadMessages(id: string, type: 'dialog' | 'channel') {
     try {
       const endpoint = type === 'dialog' ? `/dialogs/${id}/messages` : `/channels/${id}/messages`;
-      const response = await apiClient.get(endpoint);
+      const response = await apiClient.get<Message[]>(endpoint);
       if (response.success) {
-        setMessages(response.data || []);
+        setMessages(response.data ?? []);
+      } else {
+        setMessages([]);
       }
     } catch (error) {
       toast.error('Failed to load messages');

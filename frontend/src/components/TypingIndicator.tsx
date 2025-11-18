@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { UserAvatar } from './UserAvatar';
 import { useChatStore } from '../store/chatStore';
 
 interface TypingIndicatorProps {
