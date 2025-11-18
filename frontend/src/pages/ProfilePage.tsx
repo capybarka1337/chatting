@@ -1,18 +1,17 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
   Camera, 
-  User, 
+  User as UserIcon, 
   Mail, 
   Palette,
-  Save,
-  X
+  Save
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../utils/api';
 import { toast } from 'react-hot-toast';
+import type { User as UserType } from '../types';
 
 export const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +29,7 @@ export const ProfilePage = () => {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.put('/user/profile', formData);
+      const response = await apiClient.put<UserType>('/user/profile', formData);
       
       if (response.success && response.data) {
         updateUser(response.data);
@@ -54,7 +53,7 @@ export const ProfilePage = () => {
       const formData = new FormData();
       formData.append('avatar', file);
 
-      const response = await apiClient.post('/user/avatar', formData, {
+      const response = await apiClient.post<Pick<UserType, 'avatar'>>('/user/avatar', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -95,7 +94,7 @@ export const ProfilePage = () => {
   const updateColorScheme = async (colorScheme: string) => {
     setIsLoading(true);
     try {
-      const response = await apiClient.put('/user/color-scheme', { colorScheme });
+      const response = await apiClient.put<Pick<UserType, 'colorScheme'>>('/user/color-scheme', { colorScheme });
       
       if (response.success && response.data) {
         updateUser({ colorScheme: response.data.colorScheme });
@@ -138,7 +137,7 @@ export const ProfilePage = () => {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <User className="w-12 h-12 text-white" />
+                  <UserIcon className="w-12 h-12 text-white" />
                 )}
               </div>
               <button
@@ -168,7 +167,7 @@ export const ProfilePage = () => {
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   value={formData.username}

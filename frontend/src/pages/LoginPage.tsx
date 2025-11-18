@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageCircle, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { MessageCircle, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../utils/api';
 import { toast } from 'react-hot-toast';
+import type { AuthResponse } from '../types';
 
 export const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ export const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.post('/auth/login', formData);
+      const response = await apiClient.post<AuthResponse>('/auth/login', formData);
       
       if (response.success && response.data) {
         login(response.data.user, response.data.token);

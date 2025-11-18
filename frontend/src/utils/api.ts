@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { ApiResponse } from '../types';
 
@@ -34,9 +34,9 @@ class ApiClient {
     );
   }
 
-  async post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response = await this.client.post(url, data);
+      const response = await this.client.post(url, data, config);
       return response.data;
     } catch (error: any) {
       return {
@@ -46,9 +46,9 @@ class ApiClient {
     }
   }
 
-  async get<T>(url: string): Promise<ApiResponse<T>> {
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response = await this.client.get(url);
+      const response = await this.client.get(url, config);
       return response.data;
     } catch (error: any) {
       return {
@@ -58,9 +58,9 @@ class ApiClient {
     }
   }
 
-  async put<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response = await this.client.put(url, data);
+      const response = await this.client.put(url, data, config);
       return response.data;
     } catch (error: any) {
       return {
@@ -70,9 +70,9 @@ class ApiClient {
     }
   }
 
-  async delete<T>(url: string): Promise<ApiResponse<T>> {
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response = await this.client.delete(url);
+      const response = await this.client.delete(url, config);
       return response.data;
     } catch (error: any) {
       return {

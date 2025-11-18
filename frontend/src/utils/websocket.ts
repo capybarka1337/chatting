@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { useAuthStore } from '../store/authStore';
 import { useChatStore } from '../store/chatStore';
-import { WebSocketMessage, Message, User } from '../types';
+import { Message, Reaction, User } from '../types';
 
 class WebSocketService {
   private socket: Socket | null = null;
@@ -50,14 +50,37 @@ class WebSocketService {
       useChatStore.getState().setOnlineUsers(users);
     });
 
-    this.socket.on('reaction', (data: { messageId: string; reaction: any }) => {
-      const { updateMessage } = useChatStore.getState();
-      updateMessage(data.messageId, { reactions: data.reaction });
+    this.socket.on('reaction', (data: { messageId: string; reaction: Reaction }) => {
+      const { updateMessage, messages } = useChatStore.getState();
+      const message = messages.find((msg) => msg.id === data.messageId);
+      if (!message) {
+        return;
+      }
+
+      const reactions = [...message.reactions];
+      const existingIndex = reactions.findIndex((reaction) => reaction.id === data.reaction.id);
+
+      if (existingIndex >= 0) {
+        reactions[existingIndex] = data.reaction;
+      } else {
+        reactions.push(data.reaction);
+      }
+
+      updateMessage(data.messageId, { reactions });
     });
 
     this.socket.on('read_receipt', (data: { messageId: string; userId: string }) => {
-      const { updateMessage } = useChatStore.getState();
-      updateMessage(data.messageId, { readBy: data.userId });
+      const { updateMessage, messages } = useChatStore.getState();
+      const message = messages.find((msg) => msg.id === data.messageId);
+      if (!message) {
+        return;
+      }
+
+      if (message.readBy.includes(data.userId)) {
+        return;
+      }
+
+      updateMessage(data.messageId, { readBy: [...message.readBy, data.userId] });
     });
   }
 
